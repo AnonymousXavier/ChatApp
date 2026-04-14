@@ -1,0 +1,4 @@
+NEXT_UI_ELEMENT_ID = 1
+RUNNING = True
+
+UI = {}

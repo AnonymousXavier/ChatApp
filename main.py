@@ -3,6 +3,7 @@ import pygame
 from ECS.Builders.MainMenuBuilder import MainMenuBuilder
 from ECS.Systems import (
     InputSystem,
+    NetworkSystem,
     RenderingSystem,
     HoveringSystem,
     ClickingSystem,
@@ -14,7 +15,8 @@ from Globals import Settings, States
 class Main:
     def __init__(self) -> None:
         self.window = pygame.display.set_mode(Settings.WINDOW.SIZE)
-        MainMenuBuilder.build(States.UI)
+        NetworkSystem.init("You")
+        MainMenuBuilder.build(States.UI, NetworkSystem.client.roster)
 
     def draw(self):
         self.window.fill(Settings.COLOURS.BLACK)
@@ -26,6 +28,9 @@ class Main:
         events = []
 
         InputSystem.process(States.UI)
+        NetworkSystem.process()
+        MainMenuBuilder.update_connected_users(States.UI, NetworkSystem.client.roster)
+
         HoveringSystem.process(States.UI)
         ClickingSystem.process(States.UI, events)
         UISystem.process(States.UI, events)

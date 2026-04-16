@@ -47,7 +47,8 @@ class ChatServer:
             if client_socket != ignore_socket:
                 try:
                     client_socket.sendall(payload)
-                except:
+                except Exception as err:
+                    print(err)
                     self.disconnect_client(client_socket)
 
     def route_direct_message(self, target_id: int, packet: dict):
@@ -58,7 +59,8 @@ class ChatServer:
             if info["id"] == target_id or info["id"] == packet["sender_id"]:
                 try:
                     client_socket.sendall(payload)
-                except:
+                except Exception as err:
+                    print(err)
                     self.disconnect_client(client_socket)
 
     def disconnect_client(self, conn: socket.socket):
@@ -94,7 +96,8 @@ class ChatServer:
                         packet["sender_id"] = sender_id
                         self.route_direct_message(packet["target_id"], packet)
 
-            except Exception as e:
+            except Exception as err:
+                print(err)
                 break
 
         self.disconnect_client(conn)

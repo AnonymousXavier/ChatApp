@@ -1,5 +1,10 @@
 import pygame
-from ECS.Components import ClickComponent, RenderComponent, SpatialComponent
+from ECS.Components import (
+    ClickComponent,
+    EditTextComponent,
+    RenderComponent,
+    SpatialComponent,
+)
 
 
 def process(ui: dict, events: list):
@@ -12,6 +17,10 @@ def process(ui: dict, events: list):
             mouse_pos = pygame.mouse.get_pos()
             is_hovered = element[SpatialComponent].rect.collidepoint(mouse_pos)
             right_mouse_clicked = pygame.mouse.get_pressed()[0]
+
+            if right_mouse_clicked:
+                if EditTextComponent in element:
+                    element[EditTextComponent].editing = False
 
             if is_hovered and right_mouse_clicked:
                 events.append(

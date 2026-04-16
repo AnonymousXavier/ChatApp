@@ -46,6 +46,7 @@ class ChatClient:
 
     def receive_loop(self):
         buffer = ""
+        i = 0
         while self.connected:
             try:
                 data = self.socket.recv(1024)
@@ -67,6 +68,8 @@ class ChatClient:
                         # Add the message to the inbox for Pygame to render
                         self.inbox.append(packet)
 
-            except Exception as e:
+            except Exception as err:
+                print(err)
                 self.connected = False
                 break
+            i += 1

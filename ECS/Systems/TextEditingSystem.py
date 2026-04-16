@@ -1,12 +1,15 @@
 import pygame
 
-from ECS.Components import TextComponent
+from ECS.Components import EditTextComponent, TextComponent
 
 
 def process(ui: dict, event):
     for element in ui.values():
-        if TextComponent not in element:
+        if TextComponent not in element or EditTextComponent not in element:
             continue
+        if not element[EditTextComponent].editing:
+            continue
+
         if event.key == pygame.K_BACKSPACE:
             text = element[TextComponent].text
             if text != "":

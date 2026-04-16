@@ -15,7 +15,7 @@ from Globals import Settings, States
 class Main:
     def __init__(self) -> None:
         self.window = pygame.display.set_mode(Settings.WINDOW.SIZE)
-        NetworkSystem.init("You")
+        NetworkSystem.init("___")
         MainMenuBuilder.build(States.UI, NetworkSystem.client.roster)
 
     def draw(self):
@@ -29,7 +29,11 @@ class Main:
 
         InputSystem.process(States.UI)
         NetworkSystem.process()
-        MainMenuBuilder.update_connected_users(States.UI, NetworkSystem.client.roster)
+        match States.CURRENT_STATE:
+            case "MAIN_MENU":
+                MainMenuBuilder.update_connected_users(
+                    States.UI, NetworkSystem.client.roster
+                )
 
         HoveringSystem.process(States.UI)
         ClickingSystem.process(States.UI, events)

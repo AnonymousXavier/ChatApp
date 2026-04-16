@@ -6,12 +6,16 @@ import json
 class ChatClient:
     def __init__(self, host: str, port: int, username: str):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.id_on_server: int = -1
         self.username = username
         self.connected = False
 
         # State variables for Pygame to read
         self.roster = {}  # Format: {1: "Xavier", 2: "Jesse Ghost"}
-        self.inbox = []  # List of received DM packets
+        self.inbox = {}  # received Messages
+        self.message_indexs = {}  # Determines the messages were send
+        self.outbox = {}  # Sent Messages
+        self.currently_messageing: int = -1
 
         try:
             self.socket.connect((host, port))
@@ -35,14 +39,34 @@ class ChatClient:
             except:
                 self.connected = False
 
-    def send_dm(self, target_id: int, text: str):
+    def send_dm(self, target_id: int, msg: str):
         """Helper function to format a DM."""
-        self.send_packet({"type": "dm", "target_id": target_id, "message": text})
+
+        # Add the message to the outbox
+        self.update_messages_dict(
+            msg_dict=self.outbox,
+            target_id=target_id,
+            msg=msg,
+        )
+
+        self.send_packet({"type": "dm", "target_id": target_id, "message": msg})
 
     def update_username(self, new_name: str):
         """Call this from Pygame when the user changes their name in the UI."""
         self.username = new_name
-        self.send_packet({"type": "join", "username": self.username})
+        self.send_packet({"type": "change_username", "username": self.username})
+
+    def update_messages_dict(self, msg_dict: dict, target_id: int, msg: str):
+        if target_id not in msg_dict:
+            msg_dict[target_id] = {}
+
+        if target_id not in self.message_indexs:
+            self.message_indexs[target_id] = 1
+
+        msg_id = self.message_indexs[target_id]
+        msg_dict[target_id][msg_id] = msg
+
+        self.message_indexs[target_id] += 1
 
     def receive_loop(self):
         buffer = ""
@@ -62,14 +86,25 @@ class ChatClient:
                     # --- STATE UPDATE LOGIC ---
                     if packet["type"] == "roster":
                         # Convert string keys back to integers (JSON stringifies dict keys)
-                        self.roster = {int(k): v for k, v in packet["users"].items()}
+                        self.roster = {
+                            int(client_id): username
+                            for client_id, username in packet["users"].items()
+                            if int(client_id) != int(self.id_on_server)
+                        }
 
                     elif packet["type"] == "dm":
-                        # Add the message to the inbox for Pygame to render
-                        self.inbox.append(packet)
+                        # Add the message to the inbox
 
-            except Exception as err:
-                print(err)
+                        self.update_messages_dict(
+                            msg_dict=self.inbox,
+                            target_id=packet["target_id"],
+                            msg=packet["message"],
+                        )
+
+                    elif packet["type"] == "join":
+                        self.id_on_server = int(packet["id"])
+
+            except Exception as _:
                 self.connected = False
                 break
             i += 1

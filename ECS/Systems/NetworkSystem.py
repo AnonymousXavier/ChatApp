@@ -24,7 +24,7 @@ def init(username: str):
         server = ChatServer(HOST, PORT)
         threading.Thread(target=server.start, daemon=True).start()
 
-        time.sleep(0.5)  # Delay a bit
+        time.sleep(1)  # Delay a bit
         client = ChatClient(HOST, PORT, username)
 
 

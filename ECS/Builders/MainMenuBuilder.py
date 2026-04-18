@@ -27,19 +27,27 @@ class MainMenuBuilder:
     @classmethod
     def add_connected_users(cls, ui: dict, roster: dict):
         y = cls.h + cls.padding * 2
-        for username in roster.values():
+        for client_id, username in roster.items():
             btn_rect = pygame.Rect(cls.padding, y, cls.w, cls.h)
+            # Client Data.. make the button hold it
+            client_data = {"id": client_id}
 
-            btn_id = Factories.create_button(ui, btn_rect, username, action="enter_dm")
+            btn_id = Factories.create_button(
+                ui, btn_rect, username, action="enter_dm", extra_data=client_data
+            )
 
             cls.connected_users_btn_ids.append(btn_id)
 
             y += cls.h + cls.padding
 
     @classmethod
-    def update_connected_users(cls, ui: dict, roster: dict):
+    def destroy_connected_users_buttons(cls, ui: dict):
         for btn_id in cls.connected_users_btn_ids:
             del ui[btn_id]
+
+    @classmethod
+    def update_connected_users(cls, ui: dict, roster: dict):
+        cls.destroy_connected_users_buttons(ui)
 
         cls.connected_users_btn_ids = []
 
@@ -48,3 +56,4 @@ class MainMenuBuilder:
     @classmethod
     def destroy(cls, ui):
         del ui[cls.username_textbox_id]
+        cls.destroy_connected_users_buttons(ui)

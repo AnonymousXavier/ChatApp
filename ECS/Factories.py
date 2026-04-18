@@ -11,7 +11,12 @@ from Globals import Settings, States
 
 
 def create_button(
-    ui: dict, rect: pygame.Rect, text: str, action: str, font_size: int = 16
+    ui: dict,
+    rect: pygame.Rect,
+    text: str,
+    action: str,
+    extra_data={},
+    font_size: int = 16,
 ):
     new_id = States.NEXT_UI_ELEMENT_ID
     button = {
@@ -20,7 +25,7 @@ def create_button(
         TextComponent: TextComponent(
             text=text, color=Settings.BUTTON.TEXT_COLOR, font_size=font_size
         ),
-        ClickComponent: ClickComponent(action=action),
+        ClickComponent: ClickComponent(action=action, extra_data=extra_data),
         HoverComponent: HoverComponent(
             hovered_color=Settings.BUTTON.HOVER_COLOR,
             normal_color=Settings.BUTTON.NORMAL_COLOR,

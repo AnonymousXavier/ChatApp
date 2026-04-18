@@ -7,7 +7,7 @@ import socket
 
 HOST = socket.gethostbyname(socket.gethostname())
 PORT = 55019
-client: ChatClient = None
+client: ChatClient
 
 frame = 1
 
@@ -28,29 +28,9 @@ def init(username: str):
         client = ChatClient(HOST, PORT, username)
 
 
-# 3. Enter your Pygame loop (Simulated here with console for now)
-# Inside your Pygame ECS, you just read `client.roster` to draw the menu buttons
-# and read `client.inbox` to draw the chat history.
-
-
 def process():
     global frame
 
     if frame % 30 == 0:
         threading.Thread(target=client.receive_loop, daemon=True).start()
     frame += 1
-
-    # # Pygame would do this via UI, we'll do it via console for testing:
-    # print(f"\n--- MAIN MENU ---")
-    # print(f"Online Users: {client.roster}")
-
-    # target_str = input("Enter the ID of the user to message (or 'quit'): ")
-    # if target_str == "quit":
-    #     break
-
-    # msg = input("Enter your message: ")
-    # # client.send_dm(int(target_str), msg)
-
-    # # Wait a tiny bit for the server to route it back to us, then print inbox
-    # time.sleep(0.1)
-    # print(f"\nYour Inbox History: {client.inbox}")

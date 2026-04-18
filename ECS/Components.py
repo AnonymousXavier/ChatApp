@@ -1,6 +1,7 @@
+from typing import Optional
 import pygame
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(kw_only=True)
@@ -26,6 +27,9 @@ class RenderComponent:
 class ClickComponent:
     clicked: bool = False
     action: str
+    extra_data: dict = field(
+        default_factory=dict
+    )  # Unfortunately, ill be using this to carry data
 
 
 @dataclass(kw_only=True)
@@ -37,3 +41,4 @@ class HoverComponent:
 @dataclass(kw_only=True)
 class EditTextComponent:
     editing: bool = False
+    grows = False

@@ -13,7 +13,7 @@ class ChatClient:
         # State variables for Pygame to read
         self.roster = {}  # Format: {1: "Xavier", 2: "Jesse Ghost"}
         self.inbox = {}  # received Messages
-        self.message_indexs = {}  # Determines the messages were send
+        self.message_indexs = {}  # Helps keep track of the order messages were sent
         self.outbox = {}  # Sent Messages
         self.currently_messageing: int = -1
 
@@ -49,7 +49,14 @@ class ChatClient:
             msg=msg,
         )
 
-        self.send_packet({"type": "dm", "target_id": target_id, "message": msg})
+        self.send_packet(
+            {
+                "type": "dm",
+                "target_id": target_id,
+                "message": msg,
+                "sender_id": self.id_on_server,
+            },
+        )
 
     def update_username(self, new_name: str):
         """Call this from Pygame when the user changes their name in the UI."""
@@ -67,6 +74,12 @@ class ChatClient:
         msg_dict[target_id][msg_id] = msg
 
         self.message_indexs[target_id] += 1
+
+    def get_msg_list(self, msg_dict: dict, target_id: int):
+        if target_id not in msg_dict:
+            msg_dict[target_id] = {}
+
+        return msg_dict[target_id]
 
     def receive_loop(self):
         buffer = ""
@@ -94,12 +107,14 @@ class ChatClient:
 
                     elif packet["type"] == "dm":
                         # Add the message to the inbox
+                        # Before saving make sure it isnt the message we set
 
-                        self.update_messages_dict(
-                            msg_dict=self.inbox,
-                            target_id=packet["target_id"],
-                            msg=packet["message"],
-                        )
+                        if packet["sender_id"] != self.id_on_server:
+                            self.update_messages_dict(
+                                msg_dict=self.inbox,
+                                target_id=packet["sender_id"],
+                                msg=packet["message"],
+                            )
 
                     elif packet["type"] == "join":
                         self.id_on_server = int(packet["id"])

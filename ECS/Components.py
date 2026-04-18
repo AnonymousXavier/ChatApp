@@ -1,4 +1,3 @@
-from typing import Optional
 import pygame
 
 from dataclasses import dataclass, field
@@ -7,6 +6,7 @@ from dataclasses import dataclass, field
 @dataclass(kw_only=True)
 class TextComponent:
     text: str
+    font_name: str = "Consolas"
     font_size: int = (
         16  # I can get away with creating fonts often cos its a simple program
     )
@@ -41,4 +41,5 @@ class HoverComponent:
 @dataclass(kw_only=True)
 class EditTextComponent:
     editing: bool = False
-    grows = False
+    grows: bool = True
+    grow_direction: str = "up"

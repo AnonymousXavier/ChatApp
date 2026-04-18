@@ -53,7 +53,12 @@ def create_label(ui: dict, rect: pygame.Rect, text: str, font_size: int = 16):
 
 
 def create_textbox(
-    ui: dict, rect: pygame.Rect, text: str, action: str, font_size: int = 16
+    ui: dict,
+    rect: pygame.Rect,
+    text: str,
+    action: str,
+    font_size: int = 16,
+    grows=False,
 ):
     new_id = States.NEXT_UI_ELEMENT_ID
     button = {
@@ -67,7 +72,7 @@ def create_textbox(
             hovered_color=Settings.BUTTON.HOVER_COLOR,
             normal_color=Settings.BUTTON.NORMAL_COLOR,
         ),
-        EditTextComponent: EditTextComponent(),
+        EditTextComponent: EditTextComponent(grows=grows),
     }
 
     ui[States.NEXT_UI_ELEMENT_ID] = button

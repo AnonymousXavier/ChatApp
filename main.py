@@ -30,8 +30,6 @@ class Main:
         dt = self.clock.tick(60) / 1000
         events = []
 
-        print(self.clock.get_fps())
-
         InputSystem.process(States.UI, dt)
         NetworkSystem.process()
         StateManager.update()

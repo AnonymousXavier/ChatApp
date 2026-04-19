@@ -2,6 +2,9 @@ import socket
 import threading
 import json
 
+from ECS.Systems import TextEditingSystem
+from Globals import Settings
+
 
 class ChatClient:
     def __init__(self, host: str, port: int, username: str):
@@ -41,6 +44,14 @@ class ChatClient:
 
     def send_dm(self, target_id: int, msg: str):
         """Helper function to format a DM."""
+
+        # The message recieved is wrapped perfectly for the textbox
+        # Thus we need to re_wrap to the messageboxes size!
+        msg = TextEditingSystem.word_wrap(
+            msg,
+            Settings.CHATMENU_LAYOUT.FONT_SIZE,
+            Settings.CHATMENU_LAYOUT.TEXTBOX_WIDTH,
+        )
 
         # Add the message to the outbox
         self.update_messages_dict(
@@ -107,8 +118,8 @@ class ChatClient:
 
                     elif packet["type"] == "dm":
                         # Add the message to the inbox
-                        # Before saving make sure it isnt the message we set
 
+                        # Before saving make sure it isnt the message we set
                         if packet["sender_id"] != self.id_on_server:
                             self.update_messages_dict(
                                 msg_dict=self.inbox,

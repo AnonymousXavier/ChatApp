@@ -44,43 +44,68 @@ def process(ui: dict, event):
         else:
             element[TextComponent].text += event.unicode
 
-        element[TextComponent].text = word_wrap(
-            element[TextComponent], element[SpatialComponent].rect
-        )
+        if element[TextComponent].word_wrap:
+            element[TextComponent].text = word_wrap(
+                element[TextComponent].text,
+                element[TextComponent].font_size,
+                element[SpatialComponent].rect.width,
+            )
 
 
 def remove_last_letter_of(text: str):
     return "".join([text[i] for i in range(len(text) - 1)])
 
 
-def approx_word_width(char_n: int, font_size: int):
-    # Get width of a single char
-    char_width = char_width_font_size_slope * font_size
-    # Scale it
-    return char_width * char_n
-
-
 # Reverse engineer the word width func
-def approx_word_count(width: int, font_size: int, padding: float):
+def approx_char_count(width: float, font_size: int, padding: float):
     return (width - (padding * 4)) / (char_width_font_size_slope * font_size)
 
 
-def word_wrap(TextComponent: TextComponent, rect: pygame.Rect):
+def word_wrap(text: str, font_size: int, width: float):
     padding = Settings.MAINMENU_LAYOUT.PADDING
     # Determine the optimal characters count
-    opt_char_per_line = approx_word_count(rect.width, TextComponent.font_size, padding)
+    opt_char_per_line = int(approx_char_count(width, font_size, padding))
 
     # Make sure to remove the newlines
-    raw_text = TextComponent.text.replace("\n", "")
+    raw_text = text.replace("\n", "")
 
     # Create the effect
     i = 0
     wrapped_word = ""
+    current_word = ""
+
     for char in raw_text:
+        # Get to the next line once the characters limit is reached
         if i > opt_char_per_line:
             wrapped_word += "\n"
             i = 0
-        wrapped_word += char
+
+        # Forcefully cut words that are too long to the next line
+        if len(current_word) > opt_char_per_line:
+            allowed_portion = "".join(
+                [current_word[_] for _ in range(opt_char_per_line)]
+            )
+
+            remaining_portion = "".join(
+                [current_word[_] for _ in range(opt_char_per_line, len(current_word))]
+            )
+
+            wrapped_word += allowed_portion
+            current_word = remaining_portion
+
+            wrapped_word += "\n"
+            i = 0
+
+        # Space is added to the word before it is added to forced to the next line
+        current_word += char
+
+        # The word wrapping
+        if char == " ":
+            wrapped_word += current_word
+            current_word = ""
+
         i += 1
+
+    wrapped_word += current_word
 
     return wrapped_word

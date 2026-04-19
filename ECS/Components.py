@@ -12,6 +12,9 @@ class TextComponent:
     )
     color: tuple
 
+    word_wrap: bool = False
+    grow_direction: str = "down"
+
 
 @dataclass(kw_only=True)
 class SpatialComponent:
@@ -39,7 +42,11 @@ class HoverComponent:
 
 
 @dataclass(kw_only=True)
+class ScrollableContainerComponent:
+    element_ids: list = field(default_factory=list)
+    visible_region: tuple  # top, bottom
+
+
+@dataclass(kw_only=True)
 class EditTextComponent:
     editing: bool = False
-    grows: bool = True
-    grow_direction: str = "up"

@@ -50,3 +50,10 @@ class ScrollableContainerComponent:
 @dataclass(kw_only=True)
 class EditTextComponent:
     editing: bool = False
+
+
+@dataclass(kw_only=True)
+class BorderComponent:
+    color: tuple
+    size: int = 2
+    radius: int = 10

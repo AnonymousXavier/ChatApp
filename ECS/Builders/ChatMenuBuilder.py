@@ -46,8 +46,12 @@ class ChatMenuBuilder:
 
         # Define Elements
         # Ensure Chatting Texbox is over messages
-        cls.person_chatting_with_label_id = Factories.create_label(
-            ui, title_rect, person_chatting_with
+        cls.person_chatting_with_label_id = Factories.create_button(
+            ui,
+            title_rect,
+            person_chatting_with,
+            action="",
+            border_color=Settings.TEXTBOX.BORDER_COLOR,
         )
 
         cls.container_id = Factories.create_scrollable_container(ui, container_rect)
@@ -57,7 +61,7 @@ class ChatMenuBuilder:
         )
 
         cls.chatting_send_btn_id = Factories.create_button(
-            ui, send_btn_rect, ">", "send_dm"
+            ui, send_btn_rect, ">", "send_dm", border_radius=5
         )
 
         ui[cls.chatting_textbox_id][TextComponent].grow_direction = "up"
@@ -97,7 +101,12 @@ class ChatMenuBuilder:
                 rect.right = Settings.WINDOW.WIDTH - cls.padding
 
             cls.chat_labels_id.append(
-                Factories.create_label(States.CONTAINERS[cls.container_id], rect, msg)
+                Factories.create_label(
+                    States.CONTAINERS[cls.container_id],
+                    rect,
+                    msg,
+                    border_color=Settings.COLOURS.BLACK,
+                )
             )
             h = pygame.font.SysFont("Consolas", 16).size(msg)[1]
 

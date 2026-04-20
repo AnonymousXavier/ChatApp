@@ -28,8 +28,9 @@ def process(ui: dict, events: list):
                     ui[event["id"]][EditTextComponent].editing = True
                 elif event["action"] == "enter_dm":
                     States.CURRENT_STATE = "CHAT_MENU"
-                    # Get the clients id, based on the username showing
+                    # Snuck sm data out of the component.. my bad :(
                     button_id = event["id"]
+                    # Button contains the client id
                     extra_data = ui[button_id][ClickComponent].extra_data
                     client_id = extra_data["id"]
 

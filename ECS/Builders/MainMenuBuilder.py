@@ -19,7 +19,11 @@ class MainMenuBuilder:
 
         # Define Elements
         cls.username_textbox_id = Factories.create_textbox(
-            ui, username_textbox_rect, "Your Username", action="edit_text"
+            ui,
+            username_textbox_rect,
+            "Your Username",
+            action="edit_text",
+            border_color=Settings.TEXTBOX.BORDER_COLOR,
         )
 
         cls.add_connected_users(ui, roster)
@@ -33,7 +37,12 @@ class MainMenuBuilder:
             client_data = {"id": client_id}
 
             btn_id = Factories.create_button(
-                ui, btn_rect, username, action="enter_dm", extra_data=client_data
+                ui,
+                btn_rect,
+                username,
+                action="enter_dm",
+                extra_data=client_data,
+                border_color=Settings.BUTTON.BORDER_COLOR,
             )
 
             cls.connected_users_btn_ids.append(btn_id)

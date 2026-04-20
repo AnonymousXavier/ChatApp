@@ -1,5 +1,6 @@
 import pygame
 from ECS.Components import (
+    BorderComponent,
     RenderComponent,
     ScrollableContainerComponent,
     SpatialComponent,
@@ -25,8 +26,8 @@ def process(ui: dict, surface: pygame.Surface):
             container_rect_top = element[SpatialComponent].rect.top
             for container_child in States.CONTAINERS[element_id].values():
                 ref_rect: pygame.Rect = container_child[SpatialComponent].rect
-                if (
-                    ref_rect.y > top or ref_rect.y < bottom
+                if (ref_rect.top > top and ref_rect.top < bottom) or (
+                    ref_rect.bottom > top and ref_rect.bottom < bottom
                 ):  # So things dont just disapear as we scroll
                     new_rect = pygame.Rect(
                         ref_rect.x,
@@ -42,12 +43,22 @@ def process(ui: dict, surface: pygame.Surface):
 
 def draw_element(surface: pygame.Surface, element: dict, drawn_rect: pygame.Rect):
     # Draw Background if text components doesnt have wordwrap
+    # Else, the textcomponent handles it with the growing text system
     if TextComponent not in element or not element[TextComponent].word_wrap:
-        pygame.draw.rect(
-            surface,
-            element[RenderComponent].color,
-            drawn_rect,
-        )
+        if BorderComponent in element:  # Draw Background with a border
+            pygame.draw.rect(
+                surface,
+                element[RenderComponent].color,
+                drawn_rect,
+                border_radius=element[BorderComponent].radius,
+            )
+        else:
+            pygame.draw.rect(
+                surface,
+                element[RenderComponent].color,
+                drawn_rect,
+            )
+
     if TextComponent in element:
         font = pygame.font.SysFont(
             element[TextComponent].font_name, element[TextComponent].font_size
@@ -71,10 +82,28 @@ def draw_element(surface: pygame.Surface, element: dict, drawn_rect: pygame.Rect
 
             text_rect.center = grown_rect.center
 
-            pygame.draw.rect(
-                surface,
-                element[RenderComponent].color,
-                grown_rect,
-            )
+            if BorderComponent in element:  # Draw Background with a border
+                pygame.draw.rect(
+                    surface,
+                    element[RenderComponent].color,
+                    grown_rect,
+                    border_radius=element[BorderComponent].radius,
+                )
+
+            else:
+                pygame.draw.rect(
+                    surface,
+                    element[RenderComponent].color,
+                    grown_rect,
+                )
 
         surface.blit(text_surface, text_rect)
+
+    if BorderComponent in element:
+        pygame.draw.rect(
+            surface,
+            element[BorderComponent].color,
+            drawn_rect,
+            width=element[BorderComponent].size,
+            border_radius=element[BorderComponent].radius,
+        )
